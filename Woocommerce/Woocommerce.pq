@@ -1,7 +1,8 @@
 ﻿// This file contains your Data Connector logic
+// WooCommerce Copyright information https://woocommerce.com/style-guide/ - This Custom Connector is in no way affiliated with WooCommerce and is completely free of charge.
 section WooCommerce;
 
-Orders_Per_Page = "25"; // Changing this value would affect the amount of calls that you make. Lower value = More Calls, Higher Value = Less Calls
+Orders_Per_Page = "50"; // Changing this value would affect the amount of calls that you make. Lower value = More Calls, Higher Value = Less Calls
 siteurl = "https://www.powerquery.training";   //* Change this value for your store domain url using HTTPS
 api_version = "v1"; //*If you're using WooCommerce version 3.0 or later please change this value to 'v2'
 
