@@ -2,7 +2,8 @@
 section WooCommerce;
 
 Orders_Per_Page = "25"; // Changing this value would affect the amount of calls that you make. Lower value = More Calls, Higher Value = Less Calls
-siteurl = "https://www.poweredsolutions.co";   //* Change this value for your store domain url using HTTPS
+siteurl = "https://www.powerquery.training";   //* Change this value for your store domain url using HTTPS
+api_version = "v1"; //*If you're using WooCommerce version 3.0 or later please change this value to 'v2'
 
 // WooCommerce REST API Documentation--> http://woocommerce.github.io/woocommerce-rest-api-docs/
 
@@ -10,7 +11,7 @@ siteurl = "https://www.poweredsolutions.co";   //* Change this value for your st
 shared WooCommerce.Contents = () =>
     let
       TotalPages = Value.Metadata( Web.Contents(siteurl, 
-                                   [RelativePath="/wp-json/wc/v2/orders", 
+                                   [RelativePath="/wp-json/wc/"& api_version &"/orders", 
                                     Query=[per_page=Orders_Per_Page]]))[Headers][#"X-WP-TotalPages"],
       Pagination = List.Generate( ()=>
            [Result = WooCommerce.Orders(siteurl, Orders_Per_Page, "1"), currentPage = 1],
@@ -31,7 +32,7 @@ in
 WooCommerce.Orders = (url as text, results_per_page as text, page_number as text) =>
     let
         response = Json.Document (Web.Contents(url, 
-                                          [RelativePath="/wp-json/wc/v2/orders", 
+                                          [RelativePath="/wp-json/wc/"& api_version &"/orders", 
                                            Query=[per_page=results_per_page, 
                                                    page=page_number]]))
     in 
