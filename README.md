@@ -20,6 +20,8 @@ For complete information on how to get the credentials (REST API key and secret)
 # Our Testing Environment
 If you'd like to give this custom connector a try, we encourage you to try it first against our testing environment. It is a low budget wordpress site hosted on Azure, but it does provide the necessary protocols and backend/frontend to make the connector work.
 
+[![Video demonstration](https://i.ytimg.com/vi/S0pbWsoK2k0/mqdefault.jpg)](https://youtu.be/S0pbWsoK2k0) 
+
 Here's the data of our testing environment:
 - Url for the Store = http://woocommerceconnector.azurewebsites.net
 - API Version = v2
