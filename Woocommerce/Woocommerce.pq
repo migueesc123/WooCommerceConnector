@@ -1,23 +1,41 @@
-﻿// This file contains your Data Connector logic
-// WooCommerce Copyright information https://woocommerce.com/style-guide/ - This Custom Connector is in no way affiliated with WooCommerce and is completely free of charge.
+﻿// WooCommerce Copyright information https://woocommerce.com/style-guide/ - This Custom Connector is in no way affiliated with WooCommerce and is completely free of charge.
 section WooCommerce;
-
 Orders_Per_Page = "50"; // Changing this value would affect the amount of calls that you make. Lower value = More Calls, Higher Value = Less Calls
-siteurl = "https://www.powerquery.training";   //* Change this value for your store domain url using HTTPS
-api_version = "v1"; //*If you're using WooCommerce version 3.0 or later please change this value to 'v2'
 
 // WooCommerce REST API Documentation--> http://woocommerce.github.io/woocommerce-rest-api-docs/
 
 [DataSource.Kind="WooCommerce", Publish="WooCommerce.Publish"]
-shared WooCommerce.Contents = () =>
+shared WooCommerce.Contents = Value.ReplaceType(WooCommerce.Navigation, ConnectorParams);
+
+ConnectorParams = type function (
+   siteurl as (type text meta [
+   Documentation.FieldCaption = "The https url of your WooCommerce site"
+   ]),
+   api_version as  (type text meta[
+    Documentation.FieldCaption = "Choose your API version",
+    Documentation.FieldDescription = "For WooCommerce 2.6.x choose v1, for WooCommerce 3.0.x or later choose v2",
+    Documentation.AllowedValues = { "v1", "v2" }]
+    )) as table ;
+
+ WooCommerce.Navigation = ( siteurl as text, api_version as text) =>
+       let
+        objects = #table(
+            {"Name",       "Key",  "Data",                "ItemKind", "ItemName", "IsLeaf"},{
+            {"Orders",   "Orders",  WooCommerce.Sales(siteurl, api_version) , "Table",    "Table",    true}
+        }),
+        NavTable = Table.ToNavigationTable(objects, {"Key"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf")
+    in
+        NavTable;
+
+ WooCommerce.Sales = (siteurl as text, api_version as text) =>
     let
       TotalPages = Value.Metadata( Web.Contents(siteurl, 
                                    [RelativePath="/wp-json/wc/"& api_version &"/orders", 
                                     Query=[per_page=Orders_Per_Page]]))[Headers][#"X-WP-TotalPages"],
       Pagination = List.Generate( ()=>
-           [Result = WooCommerce.Orders(siteurl, Orders_Per_Page, "1"), currentPage = 1],
+           [Result = WooCommerce.Orders(siteurl, Orders_Per_Page, "1", api_version), currentPage = 1],
            each [currentPage] <= Number.From(TotalPages),
-            each    [Result=  WooCommerce.Orders( siteurl, Orders_Per_Page, Text.From( ([currentPage] +1))), 
+            each    [Result=  WooCommerce.Orders( siteurl, Orders_Per_Page, Text.From( currentPage), api_version), 
                     currentPage=[currentPage]+1], 
                each [Result]),
     ListsInTable = Table.FromList( Pagination, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
@@ -30,7 +48,7 @@ in
         DataTypes;
                    
 
-WooCommerce.Orders = (url as text, results_per_page as text, page_number as text) =>
+WooCommerce.Orders = (url as text, results_per_page as text, page_number as text, api_version as text ) =>
     let
         response = Json.Document (Web.Contents(url, 
                                           [RelativePath="/wp-json/wc/"& api_version &"/orders", 
@@ -63,3 +81,28 @@ WooCommerce.Icons = [
     Icon16 = { Extension.Contents("WooCommerce16.png"), Extension.Contents("WooCommerce20.png"), Extension.Contents("WooCommerce24.png"), Extension.Contents("WooCommerce32.png") },
     Icon32 = { Extension.Contents("WooCommerce32.png"), Extension.Contents("WooCommerce40.png"), Extension.Contents("WooCommerce48.png"), Extension.Contents("WooCommerce64.png") }
 ];
+
+
+
+Table.ToNavigationTable = (
+    table as table,
+    keyColumns as list,
+    nameColumn as text,
+    dataColumn as text,
+    itemKindColumn as text,
+    itemNameColumn as text,
+    isLeafColumn as text
+) as table =>
+    let
+        tableType = Value.Type(table),
+        newTableType = Type.AddTableKey(tableType, keyColumns, true) meta 
+        [
+            NavigationTable.NameColumn = nameColumn, 
+            NavigationTable.DataColumn = dataColumn,
+            NavigationTable.ItemKindColumn = itemKindColumn, 
+            Preview.DelayColumn = dataColumn, 
+            NavigationTable.IsLeafColumn = isLeafColumn
+        ],
+        navigationTable = Value.ReplaceType(table, newTableType)
+    in
+        navigationTable;
