@@ -1,4 +1,4 @@
-8# Power BI Custom Connector for WooCommerce
+# Power BI Custom Connector for WooCommerce
 This is a simple Power BI Custom Connector for Wordpress' WooCommerce. It currently only connects to the Orders endpoint to retrieve all the orders information from the WooCommerce tables.
 
 ![WooCommerce Custom Connector](https://image.ibb.co/fzAypk/Woo_Commerce_Connector.png)
@@ -10,7 +10,9 @@ For complete information on how to get the credentials (REST API key and secret)
 
 # Configuring the Connector for your site
 1. Enable the WooCommerce API on your site from Settings Menu of the WooCommerce plugin as shown in the next image:
+
 ![WooCommerce API enabled](https://user-images.githubusercontent.com/9544580/28755654-75c1d420-7525-11e7-9b29-a9ea8209da74.png)
+
 2. Download the WooCommerce.mez file from this repo
 3. Change the extension of the file from .mez to .zip
 4. Unzip the file
