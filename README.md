@@ -22,11 +22,11 @@ If you'd like to give this custom connector a try, we encourage you to try it fi
 
 Here's the data of our testing environment:
 - Url for the Store = http://woocommerceconnector.azurewebsites.net
-- API Version = 2.0
+- API Version = v2
 - API_username: ck_00c9112a8aee53ed8ea2484922630372003f96bc
 - API_password: cs_e51db59027ec9f985c22e86e802eba3fdd51c9f6
 
-Go ahead and place some orders on the online store of our testing environment! After you place the order, tweet me a screenshot of it on [Twitter](https://twitter.com/escobarmiguel90)  
+Go ahead and place some orders on the online store of our testing environment! Tweet me a screenshot of the order confirmation on [Twitter](https://twitter.com/escobarmiguel90) :)  
 Note: Please beware of posting sensitive information on the order as it'll be visible to everyone.
 
 # Submit your feedback, suggestions and more on the Issues section of this Repo!
