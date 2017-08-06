@@ -13,6 +13,7 @@ ConnectorParams = type function (
    ]),
    api_version as  (type text meta[
     Documentation.FieldCaption = "Choose your API version",
+    Documentation.SampleValues = {"https://www.poweredsolutions.co"},
     Documentation.FieldDescription = "For WooCommerce 2.6.x choose v1, for WooCommerce 3.0.x or later choose v2",
     Documentation.AllowedValues = { "v1", "v2" }]
     )) as table ;
