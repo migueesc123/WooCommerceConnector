@@ -9,11 +9,11 @@ shared WooCommerce.Contents = Value.ReplaceType(WooCommerce.Navigation, Connecto
 
 ConnectorParams = type function (
    siteurl as (type text meta [
-   Documentation.FieldCaption = "The https url of your WooCommerce site"
+   Documentation.FieldCaption = "The https url of your WooCommerce site",
+   Documentation.SampleValues = {"https://www.poweredsolutions.co"}
    ]),
    api_version as  (type text meta[
     Documentation.FieldCaption = "Choose your API version",
-    Documentation.SampleValues = {"https://www.poweredsolutions.co"},
     Documentation.FieldDescription = "For WooCommerce 2.6.x choose v1, for WooCommerce 3.0.x or later choose v2",
     Documentation.AllowedValues = { "v1", "v2" }]
     )) as table ;
@@ -64,8 +64,7 @@ WooCommerce = [
                 UsernamePassword = []
                     // Information on how to create the username and password for the REST API 
                     // http://woocommerce.github.io/woocommerce-rest-api-docs/#authentication 
-    ],
-    Label = Extension.LoadString("DataSourceLabel")
+    ]
 ];
 
 // Data Source UI publishing description
