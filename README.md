@@ -1,7 +1,8 @@
 # Power BI Custom Connector for WooCommerce
 This is a simple Power BI Custom Connector for Wordpress' WooCommerce. It currently only connects to the Orders endpoint to retrieve all the orders information from the WooCommerce tables.
 
-![WooCommerce Custom Connector](https://image.ibb.co/fzAypk/Woo_Commerce_Connector.png)
+[![WooCommerce Custom Connector](https://image.ibb.co/fzAypk/Woo_Commerce_Connector.png)](https://youtu.be/S0pbWsoK2k0) 
+
 Requirements:
  - Wordpress instace with WooCommerce 2.6.x or later
  - API Key and Secret key with Read Access
@@ -19,8 +20,6 @@ For complete information on how to get the credentials (REST API key and secret)
 
 # Our Testing Environment
 If you'd like to give this custom connector a try, we encourage you to try it first against our testing environment. It is a low budget wordpress site hosted on Azure, but it does provide the necessary protocols and backend/frontend to make the connector work.
-
-[![Video demonstration](https://i.ytimg.com/vi/S0pbWsoK2k0/mqdefault.jpg)](https://youtu.be/S0pbWsoK2k0) 
 
 Here's the data of our testing environment:
 - Url for the Store = http://woocommerceconnector.azurewebsites.net
