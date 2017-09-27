@@ -61,7 +61,9 @@ WooCommerce.Orders = (url as text, results_per_page as text, page_number as text
 // Data Source Kind description
 WooCommerce = [
     Authentication = [
-                UsernamePassword = []
+                UsernamePassword = [UsernameLabel= "Consumer Key",
+                                    PasswordLabel= "Consumer Secret",
+                                    Label= "API Credentials"]
                     // Information on how to create the username and password for the REST API 
                     // http://woocommerce.github.io/woocommerce-rest-api-docs/#authentication 
     ]
