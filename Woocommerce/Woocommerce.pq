@@ -63,7 +63,7 @@ WooCommerce = [
 TestConnection = (dataSourcePath) => 
         let
             json = Json.Document(dataSourcePath),
-            siteurl = json[siteurl],
+            siteurl = Text.Replace (json[siteurl], "\", "") ,
             api_version = json[api_version]
         in
             { "WooCommerce.Contents", siteurl, api_version },
