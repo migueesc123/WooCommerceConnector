@@ -60,6 +60,13 @@ WooCommerce.Orders = (url as text, results_per_page as text, page_number as text
 
 // Data Source Kind description
 WooCommerce = [
+TestConnection = (dataSourcePath) => 
+        let
+            json = Json.Document(dataSourcePath),
+            siteurl = json[siteurl],
+            api_version = json[api_version]
+        in
+            { "WooCommerce.Contents", siteurl, api_version },
     Authentication = [
                 UsernamePassword = [UsernameLabel= "Consumer Key",
                                     PasswordLabel= "Consumer Secret",
