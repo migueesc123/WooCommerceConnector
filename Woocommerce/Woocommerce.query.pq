@@ -1,5 +1,6 @@
 ﻿// Use this file to write queries to test your data connector
 let
-    result =WooCommerce.Contents()
-in
-    result
+    Orders =WooCommerce.Sales  ("https://woocommerceconnector.azurewebsites.net/")
+    in
+        Orders
+  

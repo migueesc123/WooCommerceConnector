@@ -1,10 +1,27 @@
 ﻿// WooCommerce Copyright information https://woocommerce.com/style-guide/ - This Custom Connector is in no way affiliated with WooCommerce and is completely free of charge.
 section WooCommerce;
+
 Orders_Per_Page = "50"; // Changing this value would affect the amount of calls that you make. Lower value = More Calls, Higher Value = Less Calls
 
 // WooCommerce REST API Documentation--> http://woocommerce.github.io/woocommerce-rest-api-docs/
 
-[DataSource.Kind="WooCommerce", Publish="WooCommerce.Publish"]
+
+
+ WooCommerce.Orders = (url as text) =>
+    let
+        Orders =  Web.Contents(url),
+        Data = Json.Document( Orders),
+    Metadata = Value.Metadata( Orders) [Headers] [Link],
+    SplitToRows =  Text.Split(Metadata, ","),
+    ToTable = Table.FromList(SplitToRows, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+    SplitToColumns = Table.SplitColumn(ToTable, "Column1", Splitter.SplitTextByDelimiter(";", QuoteStyle.Csv), {"url", "type"}),
+    TrimValues= Table.TransformColumns(SplitToColumns,{{"url", Text.Trim, type text}, {"type", Text.Trim, type text}}),
+    NextLink=   Text.Remove(TrimValues{[type="rel=next"]}[url]?,{"<",">"})
+
+    in
+    Data meta [NextLink= try NextLink otherwise null];
+
+[DataSource.Kind="WooCommerce", Publish="WooCommerce.Publish"]  
 shared WooCommerce.Contents = Value.ReplaceType(WooCommerce.Navigation, ConnectorParams);
 
 ConnectorParams = type function (
@@ -28,16 +45,15 @@ ConnectorParams = type function (
     in
         NavTable;
 
- WooCommerce.Sales = (siteurl as text, api_version as text) =>
+                
+WooCommerce.Sales = (siteurl as text, api_version as text) =>
     let
-      TotalPages = Value.Metadata( Web.Contents(siteurl, 
-                                   [RelativePath="/wp-json/wc/"& api_version &"/orders", 
-                                    Query=[per_page=Orders_Per_Page]]))[Headers][#"X-WP-TotalPages"],
-      Pagination = List.Generate( ()=>
-           [Result = WooCommerce.Orders(siteurl, Orders_Per_Page, "1", api_version), currentPage = 1],
-           each [currentPage] <= Number.From(TotalPages),
-            each    [Result=  WooCommerce.Orders( siteurl, Orders_Per_Page, Text.From( currentPage), api_version), 
-                    currentPage=[currentPage]+1], 
+            InitialURL = Uri.Combine( siteurl, "/wp-json/wc/" & api_version & "/orders"),
+            Pagination = List.Generate( ()=>
+           [Result = try WooCommerce.Orders(InitialURL) otherwise null, NextLink = Value.Metadata(Result)[NextLink]],
+           each [Result] <> null ,
+            each    [Result=  try WooCommerce.Orders( [NextLink]) otherwise null, 
+                    NextLink=Value.Metadata(Result)[NextLink]], 
                each [Result]),
     ListsInTable = Table.FromList( Pagination, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
     ExpandListColumn = Table.ExpandListColumn( ListsInTable, "Column1"),
@@ -47,16 +63,8 @@ ConnectorParams = type function (
     DataTypes = Table.TransformColumnTypes(ExpandRecords,{{"id", Int64.Type}, {"number", type text}, {"parent_id", Int64.Type}, {"order_key", type text}, {"created_via", type text}, {"version", type text}, {"status", type text}, {"currency", type text}, {"date_created", type datetime}, {"date_created_gmt", type datetime}, {"date_modified", type datetime}, {"date_modified_gmt", type datetime}, {"discount_total", type number}, {"discount_tax", type number}, {"shipping_total", type number}, {"shipping_tax", type number}, {"cart_tax", type number}, {"total", type number}, {"total_tax", type number}, {"prices_include_tax", type logical}, {"customer_id", Int64.Type}, {"customer_ip_address", type text}, {"customer_user_agent", type text}, {"customer_note", type text}, {"payment_method", type text}, {"payment_method_title", type text}, {"transaction_id", type text}, {"date_paid", type datetime}, {"date_paid_gmt", type datetime}, {"date_completed", type datetime}, {"date_completed_gmt", type datetime}, {"cart_hash", type text}})
 in
         DataTypes;
-                   
 
-WooCommerce.Orders = (url as text, results_per_page as text, page_number as text, api_version as text ) =>
-    let
-        response = Json.Document (Web.Contents(url, 
-                                          [RelativePath="/wp-json/wc/"& api_version &"/orders", 
-                                           Query=[per_page=results_per_page, 
-                                                   page=page_number]]))
-    in 
-        response;
+
 
 // Data Source Kind description
 WooCommerce = [
@@ -73,8 +81,8 @@ TestConnection = (dataSourcePath) =>
                                     Label= "API Credentials"]
                     // Information on how to create the username and password for the REST API 
                     // http://woocommerce.github.io/woocommerce-rest-api-docs/#authentication 
-    ]
-];
+    ]];
+
 
 // Data Source UI publishing description
 WooCommerce.Publish = [
