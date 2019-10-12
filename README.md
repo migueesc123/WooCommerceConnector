@@ -24,8 +24,8 @@ If you'd like to give this custom connector a try, we encourage you to try it fi
 Here's the data of our testing environment:
 - Url for the Store = https://www.powerquery.shop
 - API Version = v3
-- API_username: ck_f891a86f2b6b78bdcb47657e6f895dfe7f6d2848
-- API_password: cs_f87bc85c008b28940de45f0f91f546b1f2cf1cda
+- API_username: ck_e33ffcd2e8cfedbc89ca98ab36c26940b6cf092d
+- API_password: cs_8e033b8055c5b8a903fe50ba833b53beff1feb92
 
 Go ahead and place some orders on the online store of our testing environment! Tweet me a screenshot of the order confirmation on [Twitter](https://twitter.com/escobarmiguel90) :)  
 Note: Please beware of posting sensitive information on the order as it'll be visible to everyone.
