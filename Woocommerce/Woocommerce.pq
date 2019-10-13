@@ -1,15 +1,15 @@
 ﻿// WooCommerce Copyright information https://woocommerce.com/style-guide/ - This Custom Connector is in no way affiliated with WooCommerce and is completely free of charge.
 section WooCommerce;
 
-Orders_Per_Page = "50"; // Changing this value would affect the amount of calls that you make. Lower value = More Calls, Higher Value = Less Calls
+Orders_Per_Page = "100"; // Changing this value would affect the amount of calls that you make. Lower value = More Calls, Higher Value = Less Calls
 
 // WooCommerce REST API Documentation--> http://woocommerce.github.io/woocommerce-rest-api-docs/
 
 
 
- WooCommerce.Orders = (url as text) =>
+ WooCommerce.GetData = (url as text) =>
     let
-        Orders =  Web.Contents(url),
+        Orders =  Web.Contents(url,[Query=[per_page=Orders_Per_Page]]),
         Data = Json.Document( Orders),
     Metadata = Value.Metadata( Orders) [Headers] [Link],
     SplitToRows =  Text.Split(Metadata, ","),
@@ -40,7 +40,8 @@ ConnectorParams = type function (
         objects = #table(
             {"Name",       "Key",  "Data",                "ItemKind", "ItemName", "IsLeaf"},{
             {"Orders",   "Orders",  WooCommerce.Sales(siteurl, api_version) , "Table",    "Table",    true},
-            {"OrdersByDate",   "OrdersByDate",  WooCommerce.OrdersByDate , "Function",    "Function",    true}
+            {"OrdersByDate",   "OrdersByDate",  WooCommerce.OrdersByDate , "Function",    "Function",    true},
+            {"Subscriptions",   "Subscriptions",  WooCommerce.Subscriptions(siteurl) , "Table",    "Table",    true}
         }),
         NavTable = Table.ToNavigationTable(objects, {"Key"}, "Name", "Data", "ItemKind", "ItemName", "IsLeaf")
     in
@@ -52,9 +53,9 @@ WooCommerce.OrdersByDate = (siteurl as text, api_version as text, StartDate as d
        LastDate = DateTime.ToText( EndDate, "yyyy-MM-ddThh:mm:ss"),
        InitialURL = Uri.Combine( siteurl, "/wp-json/wc/" & api_version & "/orders?after="&FirstDate&"&before="&LastDate),
        Pagination = List.Generate( ()=>
-           [Result = try WooCommerce.Orders(InitialURL) otherwise null, NextLink = Value.Metadata(Result)[NextLink]],
+           [Result = try WooCommerce.GetData(InitialURL) otherwise null, NextLink = Value.Metadata(Result)[NextLink]],
            each [Result] <> null ,
-            each    [Result=  try WooCommerce.Orders( [NextLink]) otherwise null, 
+            each    [Result=  try WooCommerce.GetData( [NextLink]) otherwise null, 
                     NextLink=Value.Metadata(Result)[NextLink]], 
                each [Result]),
     ListsInTable = Table.FromList( Pagination, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
@@ -65,14 +66,26 @@ WooCommerce.OrdersByDate = (siteurl as text, api_version as text, StartDate as d
     DataTypes = Table.TransformColumnTypes(ExpandRecords,{{"id", Int64.Type}, {"number", type text}, {"parent_id", Int64.Type}, {"order_key", type text}, {"created_via", type text}, {"version", type text}, {"status", type text}, {"currency", type text}, {"date_created", type datetime}, {"date_created_gmt", type datetime}, {"date_modified", type datetime}, {"date_modified_gmt", type datetime}, {"discount_total", type number}, {"discount_tax", type number}, {"shipping_total", type number}, {"shipping_tax", type number}, {"cart_tax", type number}, {"total", type number}, {"total_tax", type number}, {"prices_include_tax", type logical}, {"customer_id", Int64.Type}, {"customer_ip_address", type text}, {"customer_user_agent", type text}, {"customer_note", type text}, {"payment_method", type text}, {"payment_method_title", type text}, {"transaction_id", type text}, {"date_paid", type datetime}, {"date_paid_gmt", type datetime}, {"date_completed", type datetime}, {"date_completed_gmt", type datetime}, {"cart_hash", type text}})
 in
         DataTypes;
+WooCommerce.Subscriptions = (siteurl as text) =>
+    let
+        InitialURL = Uri.Combine( siteurl, "wp-json/wc/v1/subscriptions"),
+            Pagination = List.Generate( ()=>
+           [Result = try WooCommerce.GetData(InitialURL) otherwise null, NextLink = Value.Metadata(Result)[NextLink]],
+           each [Result] <> null ,
+            each    [Result=  try WooCommerce.GetData( [NextLink]) otherwise null, 
+                    NextLink=Value.Metadata(Result)[NextLink]], 
+               each [Result]),
+               ToTable = Table.FromRecords(List.Combine(Pagination))
+               in 
+                   ToTable ;
 
 WooCommerce.Sales = (siteurl as text, api_version as text) =>
     let
             InitialURL = Uri.Combine( siteurl, "/wp-json/wc/" & api_version & "/orders"),
             Pagination = List.Generate( ()=>
-           [Result = try WooCommerce.Orders(InitialURL) otherwise null, NextLink = Value.Metadata(Result)[NextLink]],
+           [Result = try WooCommerce.GetData(InitialURL) otherwise null, NextLink = Value.Metadata(Result)[NextLink]],
            each [Result] <> null ,
-            each    [Result=  try WooCommerce.Orders( [NextLink]) otherwise null, 
+            each    [Result=  try WooCommerce.GetData( [NextLink]) otherwise null, 
                     NextLink=Value.Metadata(Result)[NextLink]], 
                each [Result]),
     ListsInTable = Table.FromList( Pagination, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
