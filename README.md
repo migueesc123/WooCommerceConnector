@@ -22,7 +22,7 @@ For complete information on how to get the credentials (REST API key and secret)
 If you'd like to give this custom connector a try, we encourage you to try it first against our testing environment. It is a low budget wordpress site hosted on Azure, but it does provide the necessary protocols and backend/frontend to make the connector work.
 
 Here's the data of our testing environment:
-- Url for the Store = https://www.powerquery.shop
+- Url for the Store = https://powerquery.shop
 - API Version = v3
 - API_username: ck_5a76a7e5b8747552b0cbb87e8a9992cff9ec6f3b
 - API_password: cs_dfc407ce96c79d4538641362d810a2f31d54efc4
