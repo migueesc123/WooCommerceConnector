@@ -6,6 +6,9 @@ This is a simple Power BI Custom Connector for Wordpress' WooCommerce. It curren
 Requirements:
  - Wordpress instace with WooCommerce 2.6.x or later
  - API Key and Secret key with Read Access
+ 
+ Optional:
+ - WooCommerce Subscriptions plug in
 
 For complete information on how to get the credentials (REST API key and secret) for your connection, you can get the full walkthrough from this page http://woocommerce.github.io/woocommerce-rest-api-docs/#authentication 
 
@@ -33,3 +36,7 @@ Note: Please beware of posting sensitive information on the order as it'll be vi
 # Submit your feedback, suggestions and more on the Issues section of this Repo!
 
 Special thanks to [Miguel Llopis](https://twitter.com/mllopis) and [Marco Russo](https://twitter.com/marcorus) for coming up with the request/idea for this Custom Connector.
+
+
+# Looking for help? 
+We offer paid support for anyone looking for help with any customizations to the Custom Connector.  Contact us at info@poweredsolutions.co for more information.
